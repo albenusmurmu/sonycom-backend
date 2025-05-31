@@ -13,13 +13,14 @@ const PORT = process.env.PORT || 5000;
 // Connect to MongoDB
 connectDB();
 
-// Allowed origins
+// Allowed frontend domains
 const allowedOrigins = [
-  'http://localhost:3000',                    // Local development
-  'https://your-frontend.vercel.app'          // Replace with actual deployed frontend URL
+  'http://localhost:3000',
+  'https://sonycom-frontend.onrender.com',
+  'https://my-portfolio-9r9a.onrender.com'
 ];
 
-// Middleware
+// CORS middleware
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -28,24 +29,24 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true // If you use cookies or auth headers
+  credentials: true,
 }));
 
-app.use(express.json()); // Parse JSON
-app.use(logger);         // Custom logger middleware
+app.use(express.json());    // Body parser
+app.use(logger);            // Logger middleware
 
-// Routes with API versioning
+// API Routes
 app.use('/api/v1/contact', contactRoutes);
 
-// Health check route
+// Health check
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Global Error Handler (after routes)
+// Error handler
 app.use(errorHandler);
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
