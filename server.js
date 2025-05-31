@@ -16,6 +16,7 @@ connectDB();
 // Allowed frontend domains
 const allowedOrigins = [
   // 'http://localhost:3000',                    // Local development
+  'http://localhost:3000',                    // Local development
   'https://sonycom-frontend.onrender.com',
   'https://my-portfolio-9r9a.onrender.com'
 ];
