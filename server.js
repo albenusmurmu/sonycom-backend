@@ -16,7 +16,8 @@ connectDB();
 // Allowed origins
 const allowedOrigins = [
   'http://localhost:3000',                    // Local development
-  'https://your-frontend.vercel.app'          // Replace with actual deployed frontend URL
+  'https://sonycom-frontend.onrender.com',
+  'https://my-portfolio-9r9a.onrender.com'
 ];
 
 // Middleware
