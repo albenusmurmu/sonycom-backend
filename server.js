@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config(); // 👈 Load .env
 
 const connectDB = require('./config/db');
 const contactRoutes = require('./routes/contactRoutes');
@@ -11,32 +11,34 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB
-connectDB();
+connectDB(); // Uses MONGO_URI from .env
 
 // Allowed frontend domains
 const allowedOrigins = [
-  // 'http://localhost:3000',                    // Local development
-  'http://localhost:3000',                    // Local development
+  'http://localhost:3000',
+  'http://127.0.0.1:5501', // 👈 Add this line
   'https://sonycom-frontend.onrender.com',
   'https://my-portfolio-9r9a.onrender.com'
 ];
 
-// CORS middleware
+// CORS setup
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin === "null") {
       callback(null, true);
     } else {
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true,
+  credentials: true
 }));
 
-app.use(express.json());    // Body parser
-app.use(logger);            // Logger middleware
+// Middleware
+app.use(express.json());
+app.use(logger);
 
-// API Routes
+// Routes
 app.use('/api/v1/contact', contactRoutes);
 
 // Health check
@@ -49,5 +51,5 @@ app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
