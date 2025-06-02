@@ -16,9 +16,10 @@ connectDB(); // Uses MONGO_URI from .env
 // Allowed frontend domains
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://127.0.0.1:5501', // 👈 Add this line
-  'https://sonycom-frontend.onrender.com',
-  'https://my-portfolio-9r9a.onrender.com'
+  'http://127.0.0.1:5501',
+  'https://sonycom-backend.onrender.com',
+  'https://my-portfolio-g1uw.onrender.com',
+  'https://sonycom-frontend.onrender.com' // ✅ Correct live frontend domain
 ];
 
 // CORS setup
