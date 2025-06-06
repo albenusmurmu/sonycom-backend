@@ -1,62 +1,49 @@
+// backend/routes/contactRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const Contact = require('../models/Contact');
+const Contact = require('../models/Contact'); // Import the model
 
-// @desc    Submit contact form
-// @route   POST /api/v1/contact
-router.post('/', async (req, res, next) => {
-    try {
-        const { name, email, subject, message } = req.body;
+// @route   POST api/contact
+// @desc    Receive and store a new contact form submission
+// @access  Public
+router.post('/', async (req, res) => {
+  try {
+    // Destructure the data from the request body
+    const { name, email, phone, countryCode, message, deadline } = req.body;
 
-        if (!name || !email || !subject || !message) {
-            res.status(400);
-            return next(new Error('All fields are required'));
-        }
-
-        const newContact = new Contact({ name, email, subject, message });
-        await newContact.save();
-
-        res.status(201).json({
-            success: true,
-            message: 'Your message has been sent successfully!',
-        });
-    } catch (error) {
-        next(error);
+    // Basic validation to check if required fields are present
+    if (!name || !email || !phone || !message) {
+      return res.status(400).json({ msg: 'Please enter all required fields.' });
     }
-});
 
-// @desc    Get all contact submissions (admin)
-// @route   GET /api/v1/contact/admin/contacts
-router.get('/admin/contacts', async (req, res, next) => {
-    try {
-        const contacts = await Contact.find().sort({ date: -1 });
-        res.json({ success: true, contacts });
-    } catch (error) {
-        next(error);
+    // Create a new contact instance using the Mongoose model
+    const newContact = new Contact({
+      name,
+      email,
+      phone,
+      countryCode,
+      message,
+      deadline: deadline || null, // Handle optional deadline
+    });
+
+    // Save the new contact to the database
+    const savedContact = await newContact.save();
+
+    // Send a success response
+    res.status(201).json({ 
+      msg: 'Your message has been sent successfully!', 
+      contact: savedContact 
+    });
+
+  } catch (err) {
+    console.error(err.message);
+    // Handle potential validation errors or server errors
+    if(err.name === 'ValidationError') {
+        return res.status(400).json({ msg: 'Validation Error', errors: err.errors });
     }
-});
-
-// @desc    Update contact status (admin)
-// @route   PUT /api/v1/contact/admin/contacts/:id
-router.put('/admin/contacts/:id', async (req, res, next) => {
-    try {
-        const { status } = req.body;
-
-        const updatedContact = await Contact.findByIdAndUpdate(
-            req.params.id,
-            { status },
-            { new: true }
-        );
-
-        if (!updatedContact) {
-            res.status(404);
-            return next(new Error('Contact not found'));
-        }
-
-        res.json({ success: true, contact: updatedContact });
-    } catch (error) {
-        next(error);
-    }
+    res.status(500).send('Server Error');
+  }
 });
 
 module.exports = router;
