@@ -31,10 +31,22 @@ router.post('/', async (req, res) => {
     const savedContact = await newContact.save();
 
     // Send a success response
-    res.status(201).json({ 
-      msg: 'Your message has been sent successfully!', 
-      contact: savedContact 
-    });
+   res.status(201).json({
+  status: 'success',
+  title: 'Message Sent!',
+  msg: 'Thank you for reaching out. We have received your message and will get back to you shortly.',
+  contact: savedContact,
+  timestamp: new Date().toISOString(),
+  nextSteps: [
+    'Check your email for confirmation.',
+    'We’ll usually respond within 24-48 hours.'
+  ],
+  support: {
+    email: 'support@sonycom.in',
+    phone: '+91-99999-88888'
+  }
+});
+
 
   } catch (err) {
     console.error(err.message);
