@@ -1,14 +1,16 @@
+// backend/middleware/errorHandler.js
+
 const errorHandler = (err, req, res, next) => {
-    // Default to 500 if statusCode is not set
-    const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
+  // Check if a status code has already been set, otherwise default to 500 (Internal Server Error)
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  
+  res.status(statusCode);
 
-    res.status(statusCode).json({
-        message: err.message || 'Server Error',
-        stack: process.env.NODE_ENV === 'development' ? err.stack : '🥞 Hidden in production',
-    });
-
-    // Optional console log for all environments
-    console.error(`[Error] ${err.message}\n${err.stack}`);
+  res.json({
+    message: err.message,
+    // IMPORTANT: Only show the error stack in development mode for security reasons
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
+  });
 };
 
 module.exports = errorHandler;

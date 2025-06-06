@@ -1,54 +1,61 @@
 // backend/server.js
 
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config(); // This loads the .env file variables
+require('dotenv').config();
 
+// Import your custom modules
+const connectDB = require('./config/db');
+const logger = require('./middleware/logger');
+const errorHandler = require('./middleware/errorHandler');
+
+// --- Initialize App and Connect to DB ---
 const app = express();
-const PORT = process.env.PORT || 5001; // Use port from .env or default to 5001
+connectDB(); // Call the function to connect to the database
+
+const PORT = process.env.PORT || 5001;
 
 // --- Middleware ---
 
+// CORS Configuration
 const allowedOrigins = [
-'http://localhost:3000', // For local development
-process.env.FRONTEND_URL  // For the deployed site on Render
+  'http://localhost:3000',
+  process.env.FRONTEND_URL 
 ];
-// CORS: Allows cross-origin requests from your React app
+
 app.use(cors({
-origin: function (origin, callback) {
-// allow requests with no origin (like mobile apps or curl requests)
-if (!origin) return callback(null, true);
-if (allowedOrigins.indexOf(origin) === -1) {
-const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-return callback(new Error(msg), false);
-}
-return callback(null, true);
-}
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 
+// Body Parser Middleware
 app.use(express.json());
 
-// --- Database Connection ---
-const MONGO_URI = process.env.MONGO_URI;
+// Custom Logger Middleware
+// This should be one of the first middleware to run
+app.use(logger);
 
-mongoose.connect(MONGO_URI, {
-useNewUrlParser: true,
-useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB Connected Successfully!'))
-.catch(err => console.error('MongoDB Connection Error:', err));
 
 // --- API Routes ---
 app.get('/', (req, res) => {
-res.send('API is running...');
+  res.send('API is running successfully...');
 });
 
-// Use the contact routes we defined
+// Use the contact routes
 app.use('/api/contact', require('./routes/contactRoutes'));
 
-// --- Start the Server ---
 
+// --- Custom Error Handler Middleware ---
+// This MUST be the last piece of middleware
+app.use(errorHandler);
+
+
+// --- Start the Server ---
 app.listen(PORT, () => {
-console.log(`Server is running on http://localhost:${PORT}`);
-}); 
+  console.log(`Server is listening on port ${PORT}`);
+});
