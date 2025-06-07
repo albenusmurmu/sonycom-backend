@@ -20,7 +20,12 @@ const PORT = process.env.PORT || 5001;
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
-  process.env.FRONTEND_URL 
+  'http://127.0.0.1:5500',                  // For local HTML file testing
+  'https://sonycom-frontend.onrender.com',    // Your main React frontend
+  'https://my-portfolio-g1uw.onrender.com', // **Your live portfolio frontend**
+  'https://sonycom-portfolio.com',            // Your custom domain (if verified)
+  'https://www.sonycom-portfolio.com',         // Your custom domain with 'www'
+  process.env.FRONTEND_URL   
 ];
 
 app.use(cors({
